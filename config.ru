@@ -1,3 +1,3 @@
-require './app.rb'
+require './loopmoshing.rb'
 run Sinatra::Application
 

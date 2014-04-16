@@ -1,0 +1,79 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,700,900);
+
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+  color: #000;
+  font-weight: 900;
+  margin-left: 10px;
+  font-size: 220px;
+  text-align: center;
+  margin-top: 300px;
+  letter-spacing: -6px;
+}
+
+#bg {
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
+
+#bg img {
+  display: none;
+}
+
+.loading {
+  height: 55px;
+  background: url(loading.gif) no-repeat 50% 45%;
+}
+
+.popup {
+  width: 400px;
+  height: 400px;
+  background: #fff;
+  border: double 3px #888;
+  padding: 15px;
+  position: absolute;
+  display: none;
+  font-family: Lato, Arial, sans-serif;
+  font-weight: 300;
+}
+
+.notice {
+  font-size: 12px;
+}
+
+a.nav {
+  color: #fff;
+  font-weight: 700;
+  font-size: 30px;
+  position: absolute;
+  text-decoration: none;
+  border-bottom: 2px solid #fff;
+}
+
+a.nav:hover {
+  border-bottom: none;
+}
+
+a.about {
+  bottom: 10px;
+  left: 10px;
+}
+
+a.upload {
+  top: 10px;
+  right: 10px;
+}
+
+a.view {
+  bottom: 10px;
+  right: 10px;
+}
+
+
