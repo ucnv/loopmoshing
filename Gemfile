@@ -1,8 +1,9 @@
 source "https://rubygems.org"
 
-gem 'sinatra'
-gem 'slim'
 gem 'aws-sdk', require: 'aws'
+gem 'slim'
+gem 'tilt', '~> 1.3'
+gem 'sinatra', '~> 1.4'
 gem 'cocaine'
 gem 'aviglitch'
 
