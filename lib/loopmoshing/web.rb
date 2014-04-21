@@ -2,6 +2,7 @@ module Loopmoshing
   class Web < Sinatra::Base
 
     enable :inline_templates
+    set :root, Pathname.new(File.dirname(__FILE__)).join('..', '..')
 
     set :bucket, Proc.new {
       s3 = AWS::S3.new(
