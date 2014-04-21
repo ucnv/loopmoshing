@@ -22,7 +22,7 @@ module Loopmoshing
       pass if hash.start_with? '_'
 
       if hash.empty?
-        @gif = @bucket.objects.with_prefix('files/').collect(&:public_url).select{|u|
+        @gif = settings.bucket.objects.with_prefix('files/').collect(&:public_url).select{|u|
           u.to_s =~ /gif$/
         }.shuffle.first
           @gif = 'sample.gif' if Sinatra::Base.development?
@@ -70,6 +70,7 @@ body
 @@ index
 
 #bg.loading data-src="#{@gif}"
+  .cover
 h1 Loopmoshing
 a.nav.show.about href="#about" About this site
 a.nav.show.upload href="#upload" Upload movie

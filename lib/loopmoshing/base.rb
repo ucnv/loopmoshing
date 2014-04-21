@@ -41,7 +41,7 @@ module Loopmoshing
         cmd.run infile: dir.join('*.png').to_s, delay: "1x#{@fps}", outfile: result.to_s
       else
         l = len / (@fps - 1)
-        cmd = Cocaine::CommandLine.new 'ffmpeg', '-i :infile -ss :start_at -t :length -an -y :outfile'
+        cmd = Cocaine::CommandLine.new 'ffmpeg', '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile'
         cmd.run infile: tmpavi, length: l.to_s, start_at: (l * 2).to_s , outfile: result.to_s
       end
 
