@@ -10,6 +10,8 @@ gem 'cocaine'
 gem 'aviglitch'
 
 group :development do
+  gem 'rspec'
+  gem 'guard-rspec', require: false
   gem 'guard-pow', require: false
 end
 

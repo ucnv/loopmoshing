@@ -1,4 +1,3 @@
-require 'require_all'
-require_all 'lib'
-#run Sinatra::Application
+$LOAD_PATH.unshift File.expand_path('./lib')
+require 'loopmoshing'
 run Loopmoshing::Web.new
