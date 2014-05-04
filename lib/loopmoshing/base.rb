@@ -9,12 +9,12 @@ module Loopmoshing
       @concat_times = 3
     end
 
-    def make infile, outdir, use_imagemagick = false
+    def make infile, outdir, use_imagemagick = true
       dir = Pathname.new outdir
       tmpavi = dir.join('tmp.avi').to_s
       # check if the file is valid
-      cmd = Cocaine::CommandLine.new 'ffmpeg', '-i :infile -vf "scale=500:-1" -g 9000 -an -t :length -r :fps -vcodec mpeg4 :outfile'
-      cmd.run infile: infile.path, fps: @fps.to_s, length: @max_length.to_s, outfile: tmpavi
+      cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -filter_complex :filter -g 9000 -b 1000k -an -t :length -r :fps -vcodec mpeg4 :outfile'
+      cmd.run infile: infile.path, fps: @fps.to_s, length: @max_length.to_s, outfile: tmpavi, filter: "scale=#{@max_width}:trunc(ow/a/2)*2"
 
       # aviglitch removes keyframes
       a = AviGlitch.open tmpavi
@@ -27,8 +27,8 @@ module Loopmoshing
 
       # using imagemagick, nice quality but very slow
       if use_imagemagick
-        # ffmpeg extract avi to png files
-        cmd = Cocaine::CommandLine.new 'ffmpeg', '-i :infile -an -y -f image2 :outfile'
+        # extract avi to png files
+        cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -an -y -f image2 :outfile'
         cmd.run infile: tmpavi, outfile: dir.join('%03d.png').to_s
 
         pngs = Dir.glob dir.join('*.png')
@@ -36,12 +36,12 @@ module Loopmoshing
           File.unlink p if i <= (@concat_times - 1) * pngs.size / @concat_times
         end
 
-        # imagemagick concat png files to gif
+        # concat png files to gif
         cmd = Cocaine::CommandLine.new 'convert', '-layers optimize -delay :delay :infile :outfile'
         cmd.run infile: dir.join('*.png').to_s, delay: "1x#{@fps}", outfile: result.to_s
       else
         l = len / (@fps - 1)
-        cmd = Cocaine::CommandLine.new 'ffmpeg', '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile'
+        cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile'
         cmd.run infile: tmpavi, length: l.to_s, start_at: (l * 2).to_s , outfile: result.to_s
       end
 

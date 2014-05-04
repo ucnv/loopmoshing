@@ -8,6 +8,7 @@ gem 'tilt', '~> 1.3'
 gem 'sinatra', '~> 1.4', require: 'sinatra/base'
 gem 'cocaine'
 gem 'aviglitch'
+gem 'puma'
 
 group :development do
   gem 'rspec'

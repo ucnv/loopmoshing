@@ -54,6 +54,8 @@ GEM
       coderay (~> 1.0)
       method_source (~> 0.8)
       slop (~> 3.4)
+    puma (2.8.2)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -95,6 +97,7 @@ DEPENDENCIES
   cocaine
   guard-pow
   guard-rspec
+  puma
   require_all
   rspec
   sinatra (~> 1.4)
