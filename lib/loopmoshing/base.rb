@@ -1,15 +1,20 @@
 module Loopmoshing
-  class Base
-    attr_accessor :fps, :concat_times, :max_length, :max_width
 
-    def initialize max_length = 7, max_width = 500, fps = 15
-      @fps = fps
-      @max_length = max_length
-      @max_width = max_width
+  class Base
+    attr_accessor :fps, :concat_times, :max_length, :max_width, :use_imagemagick
+
+    LOOPMOSHING_FILE = 'loopmoshing.gif'
+    THUMBNAIL_FILE   = 'thumbnail.gif'
+
+    def initialize
+      @fps = 15
+      @max_length = 7
+      @max_width = 500
       @concat_times = 3
+      @use_imagemagick = true
     end
 
-    def make infile, outdir, use_imagemagick = true
+    def make infile, outdir
       dir = Pathname.new outdir
       tmpavi = dir.join('tmp.avi').to_s
       # check if the file is valid
@@ -22,11 +27,12 @@ module Loopmoshing
       len = a.frames.size
       d = a.frames * @concat_times
       d.to_avi.output tmpavi
+      a.close
 
-      result = dir.join 'loopmoshing.gif'
+      result = dir.join LOOPMOSHING_FILE
 
       # using imagemagick, nice quality but very slow
-      if use_imagemagick
+      if @use_imagemagick
         # extract avi to png files
         cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -an -y -f image2 :outfile'
         cmd.run infile: tmpavi, outfile: dir.join('%03d.png').to_s
@@ -39,6 +45,12 @@ module Loopmoshing
         # concat png files to gif
         cmd = Cocaine::CommandLine.new 'convert', '-layers optimize -delay :delay :infile :outfile'
         cmd.run infile: dir.join('*.png').to_s, delay: "1x#{@fps}", outfile: result.to_s
+
+        # keep an image as gif for thumbnail
+        thumbnail = dir.join THUMBNAIL_FILE
+        cmd = Cocaine::CommandLine.new 'convert', ':infile :outfile'
+        cmd.run infile: Dir.glob(dir.join('*.png')).last, outfile: thumbnail.to_s
+
       else
         l = len / (@fps - 1)
         cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile'

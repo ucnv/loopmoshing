@@ -39,10 +39,15 @@ module Loopmoshing
       hash = Digest::MD5.hexdigest(Time.now.to_f.to_s)
       file = params[:movie][:tempfile]
       Dir.mktmpdir do |tmpdir|
-        result = Base.new.make file, tmpdir
+        dir = Pathname.new tmpdir
+        Base.new.make file, dir
         name = filename hash
         object = settings.bucket.objects[name]
-        object.write result
+        object.write dir.join(Base::LOOPMOSHING_FILE)
+        object.acl = :public_read
+        name = filename hash + '-t'
+        object = settings.bucket.objects[name]
+        object.write dir.join(Base::THUMBNAIL_FILE)
         object.acl = :public_read
       end
 
