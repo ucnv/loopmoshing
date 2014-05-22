@@ -1,7 +1,7 @@
 module Loopmoshing
 
   class Base
-    attr_accessor :fps, :concat_times, :max_length, :max_width, :use_imagemagick
+    attr_accessor :fps, :concat_times, :max_length, :max_width, :use_imagemagick, :swallow_stderr
 
     LOOPMOSHING_FILE = 'loopmoshing.gif'
     THUMBNAIL_FILE   = 'thumbnail.gif'
@@ -12,13 +12,18 @@ module Loopmoshing
       @max_width = 500
       @concat_times = 3
       @use_imagemagick = true
+      @swallow_stderr = true
     end
 
     def make infile, outdir
       dir = Pathname.new outdir
       tmpavi = dir.join('tmp.avi').to_s
       # check if the file is valid
-      cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -filter_complex :filter -g 9000 -b 1000k -an -t :length -r :fps -vcodec mpeg4 :outfile'
+      cmd = Cocaine::CommandLine.new(
+        'ffmpeg',
+        '-i :infile -filter_complex :filter -g 9000 -b 1000k -an -t :length -r :fps -vcodec mpeg4 :outfile',
+        :swallow_stderr => @swallow_stderr
+      )
       cmd.run infile: infile.path, fps: @fps.to_s, length: @max_length.to_s, outfile: tmpavi, filter: "scale=#{@max_width}:trunc(ow/a/2)*2"
 
       # aviglitch removes keyframes
@@ -34,7 +39,11 @@ module Loopmoshing
       # using imagemagick, nice quality but very slow
       if @use_imagemagick
         # extract avi to png files
-        cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -an -y -f image2 :outfile'
+        cmd = Cocaine::CommandLine.new(
+          'ffmpeg',
+          '-i :infile -an -y -f image2 :outfile',
+          :swallow_stderr => @swallow_stderr
+        )
         cmd.run infile: tmpavi, outfile: dir.join('%03d.png').to_s
 
         pngs = Dir.glob dir.join('*.png')
@@ -53,7 +62,11 @@ module Loopmoshing
 
       else
         l = len / (@fps - 1)
-        cmd = Cocaine::CommandLine.new 'avconv', '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile'
+        cmd = Cocaine::CommandLine.new(
+          'ffmpeg',
+          '-i :infile -pix_fmt rgb24 -ss :start_at -t :length -an -y :outfile',
+          :swallow_stderr => @swallow_stderr
+        )
         cmd.run infile: tmpavi, length: l.to_s, start_at: (l * 2).to_s , outfile: result.to_s
       end
 
