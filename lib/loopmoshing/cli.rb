@@ -1,6 +1,6 @@
 module Loopmoshing
   class Cli < Thor
-    desc 'generate', 'Make loopmoshing gif'
+    desc 'MOVIE [OUTFILE]', 'Generates loopmoshing image'
 
     def generate infile, outfile = nil
       outfile = outfile.nil? ? Pathname.new(infile).dirname.join('out.gif') : Pathname.new(outfile)
@@ -11,5 +11,7 @@ module Loopmoshing
         end
       end
     end
+
+    default_task :generate
   end
 end
